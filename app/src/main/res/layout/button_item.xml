@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_margin="@dimen/standard_padding"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/button_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:gravity="center"
+        android:paddingStart="@dimen/extra_padding"
+        android:paddingEnd="@dimen/extra_padding"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/button_background" />
+
+</LinearLayout>
