@@ -30,19 +30,21 @@ import java.util.Map;
 
 import activity.application.ActApplication;
 import activity.article.ActArticle;
-import activity.auth.ActAuth;
 import activity.biography.ActBiography;
 import activity.blog.ActBlog;
+import activity.chart.ActChart;
 import activity.core.ActCore;
 import activity.estate.ActEstate;
 import activity.file.ActFile;
 import activity.imageGallery.ActImageGallery;
+import activity.member.ActMember;
 import activity.movieGallery.ActMovieGallery;
 import activity.musicGallery.ActMusicGallery;
 import activity.news.ActNews;
 import activity.pooling.ActPooling;
 import activity.product.ActProduct;
 import activity.service.ActService;
+import activity.shop.ActShop;
 import activity.ticketing.ActTicket;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -92,18 +94,17 @@ public class Main extends AppCompatActivity {
             "Music Gallery",
             "Product",
             "Service",
-            "Auth",
-            "Quote",
+            "Shop",
             "Chart",
+            "Member",
+            "Quote",
             "Link Management",
             "Reservation",
             "Bank payment",
-            "Member",
             "Job",
             "Advertisement",
             "Vehicle",
-            "Object",
-            "Shop"};
+            "Object"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,9 +225,14 @@ public class Main extends AppCompatActivity {
                             startActivity(new Intent(context, ActService.class));
                             break;
                         case 15:
-                            startActivity(new Intent(context, ActAuth.class));
+                            startActivity(new Intent(context, ActShop.class));
                             break;
-
+                        case 16:
+                            startActivity(new Intent(context, ActChart.class));
+                            break;
+                        case 17:
+                            startActivity(new Intent(context, ActMember.class));
+                            break;
                     }
                 }
             });

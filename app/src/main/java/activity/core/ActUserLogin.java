@@ -72,32 +72,20 @@ public class ActUserLogin extends AppCompatActivity {
     private void getData() {
         CoreUserLoginRequest request = new CoreUserLoginRequest();
         if (!Username.getText().toString().matches("")) {
-            request.Username = Username.getText().toString();
-        } else {
-            Username.setError("Required Info !!");
-            progressBar.setVisibility(View.GONE);
-            return;
+            request.username = Username.getText().toString();
         }
         if (!Password.getText().toString().matches("")) {
-            request.Password = Password.getText().toString();
-        } else {
-            Password.setError("Required Info !!");
-            progressBar.setVisibility(View.GONE);
-            return;
+            request.pwd = Password.getText().toString();
         }
         if (!lang.getText().toString().matches("")) {
             request.lang = lang.getText().toString();
-        } else {
-            lang.setError("Required Info !!");
-            progressBar.setVisibility(View.GONE);
-            return;
         }
         RetrofitManager manager = new RetrofitManager(ActUserLogin.this);
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
         headers.put("PackageName", EasyPreference.with(this).getString("packageName",""));
-        Observable<CoreUserResponse> call = iCore.userLogin(headers, request);
+        Observable<CoreUserResponse> call = iCore.UserLogin(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Observer<CoreUserResponse>() {

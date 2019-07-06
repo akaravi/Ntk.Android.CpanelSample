@@ -20,7 +20,8 @@ import ntk.base.app.R;
 public class ActCore extends AppCompatActivity {
     @BindView(R.id.api_recycler_view)
     RecyclerView apiRecyclerView;
-    private String[] articleList = new String[]{"Main",
+    private String[] articleList = new String[]{
+            "Main",
             "Core About Us",
             "Core User Register By Mobile",
             "Core Location",
