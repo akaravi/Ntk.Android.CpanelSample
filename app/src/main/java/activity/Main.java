@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,6 +21,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -68,6 +68,7 @@ import ntk.base.api.core.model.CoreMain;
 import ntk.base.api.core.model.CoreUserLoginRequest;
 import ntk.base.api.core.model.CoreUserResponse;
 import ntk.base.api.core.model.MainCoreResponse;
+import ntk.base.api.estate.model.EstatePropertyViewRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.BuildConfig;
 import ntk.base.app.R;
@@ -102,6 +103,9 @@ public class Main extends AppCompatActivity {
     @BindView(R.id.layoutLogin)
     RelativeLayout layoutLogin;
 
+    @BindView(R.id.checkboxRememberMe)
+    CheckBox rememberMe;
+
     private String[] apiNames = new String[]{
             "Core",
             "Article",
@@ -133,6 +137,7 @@ public class Main extends AppCompatActivity {
     private ConfigRestHeader configRestHeader = new ConfigRestHeader();
     private ConfigStaticValue configStaticValue = new ConfigStaticValue(this);
     private int lagValue = 0;
+    private Boolean RememberMeValue = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +148,9 @@ public class Main extends AppCompatActivity {
     }
 
     private void setLayoutLogin() {
+        rememberMe.setChecked(RememberMeValue);
+        Username.setText(EasyPreference.with(this).getString("Username", ""));
+        Password.setText(EasyPreference.with(this).getString("Password", ""));
         lagList.add(0, "فارسی");
         lagList.add(1, "English");
         lagList.add(2, "German");
@@ -157,6 +165,18 @@ public class Main extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+        rememberMe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    RememberMeValue = true;
+                    rememberMe.setChecked(RememberMeValue);
+                } else {
+                    RememberMeValue = false;
+                    rememberMe.setChecked(RememberMeValue);
+                }
             }
         });
     }
@@ -204,6 +224,10 @@ public class Main extends AppCompatActivity {
                     @Override
                     public void onNext(CoreUserResponse response) {
                         if (response.IsSuccess) {
+                            if (RememberMeValue) {
+                                EasyPreference.with(Main.this).addString("Username", request.username);
+                                EasyPreference.with(Main.this).addString("Password", request.pwd);
+                            }
                             EasyPreference.with(Main.this).addString("Cookie", response.UserTicketToken);
                             layoutLogin.setVisibility(View.GONE);
                             init();
