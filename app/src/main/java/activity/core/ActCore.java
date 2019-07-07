@@ -27,7 +27,7 @@ public class ActCore extends AppCompatActivity {
             "Select Current Site",
             "Search New",
             "Get Count",
-            "Main",
+            "Clear Token",
             "Core About Us",
             "Core User Register By Mobile",
             "Core Location",
@@ -113,22 +113,7 @@ public class ActCore extends AppCompatActivity {
                             startActivity(new Intent(ActCore.this, ActGetCount.class));
                             break;
                         case 6:
-                            startActivity(new Intent(ActCore.this, ActUserEmailConfirm.class));
-                            break;
-                        case 7:
-                            startActivity(new Intent(ActCore.this, ActUserForgetPassword.class));
-                            break;
-                        case 8:
-                            startActivity(new Intent(ActCore.this, ActUserLoginByMobile.class));
-                            break;
-                        case 9:
-                            startActivity(new Intent(ActCore.this, ActUserMobileConfirm.class));
-                            break;
-                        case 10:
-                            startActivity(new Intent(ActCore.this, ActUserRegister.class));
-                            break;
-                        case 11:
-                            startActivity(new Intent(ActCore.this, ActCreateFilterModel.class));
+                            startActivity(new Intent(ActCore.this, ActClearToken.class));
                             break;
                     }
                 }
