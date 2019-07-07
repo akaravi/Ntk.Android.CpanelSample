@@ -226,8 +226,7 @@ public class Main extends AppCompatActivity {
     }
 
     private void init() {
-        EasyPreference.with(this).addString("url", "oco.ir/api/app");
-        EasyPreference.with(this).addString("packageName", "ntk.cms.android.academy.app10");
+        EasyPreference.with(this).addString("url", "oco.ir/api/");
         mainRecyclerView.setLayoutManager(new GridLayoutManager(Main.this, 2));
         mainRecyclerView.setAdapter(new MainRecyclerViewAdapter(this, apiNames));
         url.addTextChangedListener(new TextWatcher() {

@@ -5,12 +5,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -32,18 +37,18 @@ import ntk.base.app.R;
 
 public class ActUserLogin extends AppCompatActivity {
 
-    @BindView(R.id.lblLayout)
-    TextView lblLayout;
     @BindView(R.id.txtUsernameActUserLogin)
     EditText Username;
     @BindView(R.id.txtPasswordActUserLogin)
     EditText Password;
-    @BindView(R.id.txtlangActUserLogin)
-    EditText lang;
+    @BindView(R.id.spinnerLagActUserLogin)
+    Spinner Lag;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
+    private List<String> lagList = new ArrayList<String>();
     private ConfigRestHeader configRestHeader = new ConfigRestHeader();
     private ConfigStaticValue configStaticValue = new ConfigStaticValue(this);
+    private int lagValue = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +59,22 @@ public class ActUserLogin extends AppCompatActivity {
     }
 
     private void initialize() {
-        lblLayout.setText("CoreUserLogin");
+        lagList.add(0, "فارسی");
+        lagList.add(1, "English");
+        lagList.add(2, "German");
+        lagList.add(3, "عربی");
+        Lag.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, lagList));
+        Lag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                lagValue = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("CoreUserLogin");
@@ -74,8 +94,19 @@ public class ActUserLogin extends AppCompatActivity {
         if (!Password.getText().toString().matches("")) {
             request.pwd = Password.getText().toString();
         }
-        if (!lang.getText().toString().matches("")) {
-            request.lang = lang.getText().toString();
+        switch (lagValue) {
+            case 0:
+                request.lang = "fa_IR";
+                break;
+            case 1:
+                request.lang = "en_US";
+                break;
+            case 2:
+                request.lang = "el_GR";
+                break;
+            case 3:
+                request.lang = "ar_AE";
+                break;
         }
         RetrofitManager manager = new RetrofitManager(ActUserLogin.this);
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);

@@ -35,6 +35,7 @@ import ntk.base.api.core.model.CoreAllWithAliasResponse;
 import ntk.base.api.core.model.CoreGetAllRequest;
 import ntk.base.api.core.model.CoreUserLoginRequest;
 import ntk.base.api.core.model.CoreUserResponse;
+import ntk.base.api.estate.model.EstatePropertyViewRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
@@ -91,6 +92,7 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
+        headers.put("Set-Cookie",EasyPreference.with(ActGetAllWithAlias.this).getString("Cookie", ""));
         Observable<CoreAllWithAliasResponse> call = iCore.GetAllWithAlias(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

@@ -27,17 +27,7 @@ public class ActCore extends AppCompatActivity {
             "Select Current Site",
             "Search New",
             "Get Count",
-            "Clear Token",
-            "Core About Us",
-            "Core User Register By Mobile",
-            "Core Location",
-            "Core User Change Password",
-            "Core User Email Confirm",
-            "Core User Forget Password",
-            "Core User Login By Mobile",
-            "Core User Mobile Confirm",
-            "Core User Register",
-            "Core Create Filter Model"};
+            "Clear Token"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

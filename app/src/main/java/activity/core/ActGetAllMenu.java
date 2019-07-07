@@ -89,6 +89,7 @@ public class ActGetAllMenu extends AppCompatActivity implements AdapterView.OnIt
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
+        headers.put("Set-Cookie",EasyPreference.with(ActGetAllMenu.this).getString("Cookie", ""));
         Observable<CoreAllMenuResponse> call = iCore.GetAllMainMenu(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
