@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="activity.core.ActClearToken"></activity>
+        <activity android:name="activity.article.ActGetCount"/>
+        <activity android:name="activity.core.ActClearToken" />
         <activity android:name="activity.core.ActGetCount" />
         <activity android:name="activity.core.ActSearchNew" />
         <activity android:name="activity.core.ActSelectCurrentSite" />
@@ -27,7 +28,6 @@
         <activity android:name="activity.shop.ActShop" />
         <activity android:name="activity.member.ActMember" />
         <activity android:name="activity.chart.ActChart" />
-        <activity android:name="activity.auth.ActAuth" />
         <activity android:name="activity.core.ActCreateFilterModel" />
         <activity android:name="activity.blog.ActTagList" />
         <activity android:name="activity.blog.ActContentView" />
@@ -163,7 +163,8 @@
         <activity android:name="activity.news.ActNews" />
         <activity android:name="activity.article.ArticleContentFavoriteListActivity" />
         <activity android:name="activity.article.ArticleCommentViewActivity" />
-        <activity android:name="activity.Main">
+        <activity android:name="activity.Main"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

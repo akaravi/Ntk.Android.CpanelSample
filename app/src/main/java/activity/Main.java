@@ -12,20 +12,28 @@ import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import activity.application.ActApplication;
@@ -34,6 +42,7 @@ import activity.biography.ActBiography;
 import activity.blog.ActBlog;
 import activity.chart.ActChart;
 import activity.core.ActCore;
+import activity.core.ActUserLogin;
 import activity.estate.ActEstate;
 import activity.file.ActFile;
 import activity.imageGallery.ActImageGallery;
@@ -48,9 +57,10 @@ import activity.shop.ActShop;
 import activity.ticketing.ActTicket;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnTextChanged;
+import butterknife.OnClick;
 import config.ConfigRestHeader;
 import config.ConfigStaticValue;
+import dialog.JsonDialog;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -58,8 +68,11 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ntk.base.api.core.interfase.ICore;
 import ntk.base.api.core.model.CoreMain;
+import ntk.base.api.core.model.CoreUserLoginRequest;
+import ntk.base.api.core.model.CoreUserResponse;
 import ntk.base.api.core.model.MainCoreResponse;
 import ntk.base.api.utill.RetrofitManager;
+import ntk.base.app.ActMain;
 import ntk.base.app.BuildConfig;
 import ntk.base.app.R;
 import utill.AppUtill;
@@ -75,8 +88,23 @@ public class Main extends AppCompatActivity {
     @BindView(R.id.txtUrl)
     EditText url;
 
-    @BindView(R.id.txtPackageName)
-    EditText packageName;
+    @BindView(R.id.txtToken)
+    TextView token;
+
+    @BindView(R.id.txtUsername)
+    EditText Username;
+
+    @BindView(R.id.txtPassword)
+    EditText Password;
+
+    @BindView(R.id.spinnerLag)
+    Spinner Lag;
+
+    @BindView(R.id.btnLogin)
+    Button btnLogin;
+
+    @BindView(R.id.layoutLogin)
+    RelativeLayout layoutLogin;
 
     private String[] apiNames = new String[]{
             "Core",
@@ -105,13 +133,100 @@ public class Main extends AppCompatActivity {
             "Advertisement",
             "Vehicle",
             "Object"};
+    private List<String> lagList = new ArrayList<String>();
+    private ConfigRestHeader configRestHeader = new ConfigRestHeader();
+    private ConfigStaticValue configStaticValue = new ConfigStaticValue(this);
+    private int lagValue = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         ButterKnife.bind(this);
-        init();
+        setLayoutLogin();
+    }
+
+    private void setLayoutLogin() {
+        lagList.add(0, "فارسی");
+        lagList.add(1, "English");
+        lagList.add(2, "German");
+        lagList.add(3, "عربی");
+        Lag.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, lagList));
+        Lag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                lagValue = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    @OnClick(R.id.btnLogin)
+    public void onLoginClick() {
+        btnLogin.setVisibility(View.INVISIBLE);
+        getData();
+    }
+
+    private void getData() {
+        CoreUserLoginRequest request = new CoreUserLoginRequest();
+        if (!Username.getText().toString().matches("")) {
+            request.username = Username.getText().toString();
+        }
+        if (!Password.getText().toString().matches("")) {
+            request.pwd = Password.getText().toString();
+        }
+        switch (lagValue) {
+            case 0:
+                request.lang = "fa_IR";
+                break;
+            case 1:
+                request.lang = "en_US";
+                break;
+            case 2:
+                request.lang = "el_GR";
+                break;
+            case 3:
+                request.lang = "ar_AE";
+                break;
+        }
+        RetrofitManager manager = new RetrofitManager(Main.this);
+        ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
+        Map<String, String> headers = new HashMap<>();
+        headers = configRestHeader.GetHeaders(this);
+        Observable<CoreUserResponse> call = iCore.UserLogin(headers, request);
+        call.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<CoreUserResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(CoreUserResponse response) {
+                        if (response.IsSuccess) {
+                            EasyPreference.with(Main.this).addString("Cookie", response.UserTicketToken);
+                            layoutLogin.setVisibility(View.GONE);
+                            init();
+                        } else {
+                            btnLogin.setVisibility(View.VISIBLE);
+                            Toast.makeText(Main.this, response.ErrorMessage, Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        btnLogin.setVisibility(View.VISIBLE);
+                        Toast.makeText(Main.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 
     private void init() {
@@ -132,28 +247,11 @@ public class Main extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                EasyPreference.with(Main.this).remove("url");
                 EasyPreference.with(Main.this).addString("url", s.toString());
             }
         });
 
-        packageName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                EasyPreference.with(Main.this).remove("packageName");
-                EasyPreference.with(Main.this).addString("packageName", s.toString());
-            }
-        });
+        token.setText(EasyPreference.with(Main.this).getString("Cookie", ""));
     }
 
     public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.MainViewHolder> {
