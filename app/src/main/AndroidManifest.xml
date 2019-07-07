@@ -15,7 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="activity.core.ActSearchNew"></activity>
+        <activity android:name="activity.core.ActGetCount"></activity>
+        <activity android:name="activity.core.ActSearchNew" />
         <activity android:name="activity.core.ActSelectCurrentSite" />
         <activity android:name="activity.core.ActGetAllMenu" />
         <activity android:name="activity.core.ActGetAllWithAlias" />

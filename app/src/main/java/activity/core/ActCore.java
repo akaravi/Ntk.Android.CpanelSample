@@ -26,6 +26,7 @@ public class ActCore extends AppCompatActivity {
             "Get All Menu",
             "Select Current Site",
             "Search New",
+            "Get Count",
             "Main",
             "Core About Us",
             "Core User Register By Mobile",
@@ -109,7 +110,7 @@ public class ActCore extends AppCompatActivity {
                             startActivity(new Intent(ActCore.this, ActSearchNew.class));
                             break;
                         case 5:
-                            startActivity(new Intent(ActCore.this, ActUserChangePassword.class));
+                            startActivity(new Intent(ActCore.this, ActGetCount.class));
                             break;
                         case 6:
                             startActivity(new Intent(ActCore.this, ActUserEmailConfirm.class));
