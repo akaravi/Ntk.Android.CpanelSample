@@ -25,11 +25,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ntk.base.api.core.interfase.ICore;
 import ntk.base.api.core.model.CoreClearTokenResponse;
-import ntk.base.api.core.model.CoreCountRequest;
-import ntk.base.api.core.model.CoreCountResponse;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
-import utill.EasyPreference;
 
 public class ActClearToken extends AppCompatActivity {
 
@@ -65,7 +62,6 @@ public class ActClearToken extends AppCompatActivity {
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Authorization", EasyPreference.with(ActClearToken.this).getString("Cookie", ""));
         Observable<CoreClearTokenResponse> call = iCore.ClearToken(headers);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
