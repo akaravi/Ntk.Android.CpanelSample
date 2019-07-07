@@ -21,6 +21,7 @@ public class ActCore extends AppCompatActivity {
     @BindView(R.id.api_recycler_view)
     RecyclerView apiRecyclerView;
     private String[] articleList = new String[]{
+            "Core User Login",
             "Main",
             "Core About Us",
             "Core User Register By Mobile",
@@ -28,7 +29,6 @@ public class ActCore extends AppCompatActivity {
             "Core User Change Password",
             "Core User Email Confirm",
             "Core User Forget Password",
-            "Core User Login",
             "Core User Login By Mobile",
             "Core User Mobile Confirm",
             "Core User Register",
@@ -90,28 +90,28 @@ public class ActCore extends AppCompatActivity {
                 public void onClick(View view) {
                     switch (view.getId()) {
                         case 0:
-                            startActivity(new Intent(ActCore.this, ActGetResponseMain.class));
+                            startActivity(new Intent(ActCore.this, ActUserLogin.class));
                             break;
                         case 1:
-                            startActivity(new Intent(ActCore.this, ActGetAbout.class));
+                            startActivity(new Intent(ActCore.this, ActGetResponseMain.class));
                             break;
                         case 2:
-                            startActivity(new Intent(ActCore.this, ActRegisterWithMobile.class));
+                            startActivity(new Intent(ActCore.this, ActGetAbout.class));
                             break;
                         case 3:
-                            startActivity(new Intent(ActCore.this, ActLocation.class));
+                            startActivity(new Intent(ActCore.this, ActRegisterWithMobile.class));
                             break;
                         case 4:
-                            startActivity(new Intent(ActCore.this, ActUserChangePassword.class));
+                            startActivity(new Intent(ActCore.this, ActLocation.class));
                             break;
                         case 5:
-                            startActivity(new Intent(ActCore.this, ActUserEmailConfirm.class));
+                            startActivity(new Intent(ActCore.this, ActUserChangePassword.class));
                             break;
                         case 6:
-                            startActivity(new Intent(ActCore.this, ActUserForgetPassword.class));
+                            startActivity(new Intent(ActCore.this, ActUserEmailConfirm.class));
                             break;
                         case 7:
-                            startActivity(new Intent(ActCore.this, ActUserLogin.class));
+                            startActivity(new Intent(ActCore.this, ActUserForgetPassword.class));
                             break;
                         case 8:
                             startActivity(new Intent(ActCore.this, ActUserLoginByMobile.class));
