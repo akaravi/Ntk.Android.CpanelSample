@@ -30,12 +30,10 @@ import ntk.base.api.core.model.CoreSearchNewRequest;
 import ntk.base.api.core.model.CoreSearchNewResponse;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
+import utill.EasyPreference;
 
 public class ActSearchNew extends AppCompatActivity {
 
-
-    @BindView(R.id.lblLayout)
-    TextView lblLayout;
     @BindView(R.id.txtKeyActActSearchNew)
     EditText Key;
     @BindView(R.id.api_test_submit_button)
@@ -54,7 +52,6 @@ public class ActSearchNew extends AppCompatActivity {
     }
 
     private void initialize() {
-        lblLayout.setText("Search New");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Search New");
@@ -75,6 +72,7 @@ public class ActSearchNew extends AppCompatActivity {
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
+        headers.put("Authorization", EasyPreference.with(ActSearchNew.this).getString("Cookie", ""));
         Observable<CoreSearchNewResponse> call = iCore.SearchNew(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

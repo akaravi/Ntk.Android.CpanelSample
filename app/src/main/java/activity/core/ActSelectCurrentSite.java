@@ -38,8 +38,6 @@ import utill.EasyPreference;
 
 public class ActSelectCurrentSite extends AppCompatActivity {
 
-    @BindView(R.id.lblLayout)
-    TextView lblLayout;
     @BindView(R.id.txtIdActActSelectCurrentSite)
     EditText Id;
     @BindView(R.id.api_test_submit_button)
@@ -58,7 +56,6 @@ public class ActSelectCurrentSite extends AppCompatActivity {
     }
 
     private void initialize() {
-        lblLayout.setText("Select Current Site");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Select Current Site");
@@ -79,6 +76,7 @@ public class ActSelectCurrentSite extends AppCompatActivity {
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
+        headers.put("Authorization",EasyPreference.with(ActSelectCurrentSite.this).getString("Cookie", ""));
         Observable<CoreSelectCurrentSiteResponse> call = iCore.SelectCurrentSite(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

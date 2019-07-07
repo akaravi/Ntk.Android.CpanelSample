@@ -33,8 +33,6 @@ import io.reactivex.schedulers.Schedulers;
 import ntk.base.api.core.interfase.ICore;
 import ntk.base.api.core.model.CoreAllWithAliasResponse;
 import ntk.base.api.core.model.CoreGetAllRequest;
-import ntk.base.api.core.model.CoreUserLoginRequest;
-import ntk.base.api.core.model.CoreUserResponse;
 import ntk.base.api.estate.model.EstatePropertyViewRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
@@ -42,8 +40,6 @@ import utill.EasyPreference;
 
 public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    @BindView(R.id.lblLayout)
-    TextView lblLayout;
     @BindView(R.id.txtContentFullSearchActGetAllWithAlias)
     EditText txtContent;
     @BindView(R.id.SpinnerNeedToRunFakePaginationActGetAllWithAlias)
@@ -66,7 +62,6 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
     }
 
     private void initialize() {
-        lblLayout.setText("GetAllWithAlias");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("GetAllWithAlias");
@@ -92,7 +87,7 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Set-Cookie",EasyPreference.with(ActGetAllWithAlias.this).getString("Cookie", ""));
+        headers.put("Authorization", EasyPreference.with(ActGetAllWithAlias.this).getString("Cookie", ""));
         Observable<CoreAllWithAliasResponse> call = iCore.GetAllWithAlias(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

@@ -34,8 +34,6 @@ import ntk.base.app.R;
 
 public class ActGetCount extends AppCompatActivity {
 
-    @BindView(R.id.lblLayout)
-    TextView lblLayout;
     @BindView(R.id.api_test_submit_button)
     Button apiTestSubmitButton;
     @BindView(R.id.progress_bar)
@@ -52,7 +50,6 @@ public class ActGetCount extends AppCompatActivity {
     }
 
     private void initialize() {
-        lblLayout.setText("Get Count");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Get Count");

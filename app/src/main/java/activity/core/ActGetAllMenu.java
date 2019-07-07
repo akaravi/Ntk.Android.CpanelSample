@@ -39,8 +39,6 @@ import utill.EasyPreference;
 
 public class ActGetAllMenu extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    @BindView(R.id.lblLayout)
-    TextView lblLayout;
     @BindView(R.id.txtContentFullSearchActGetAllMenu)
     EditText txtContent;
     @BindView(R.id.SpinnerNeedToRunFakePaginationActGetAllMenu)
@@ -63,10 +61,9 @@ public class ActGetAllMenu extends AppCompatActivity implements AdapterView.OnIt
     }
 
     private void initialize() {
-        lblLayout.setText("GetAllMenu");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("GetAllMenu");
+        getSupportActionBar().setTitle("Get All Menu");
         spinnerValue.add(0, true);
         spinnerValue.add(1, false);
         NeedToRun.setAdapter(new ArrayAdapter<Boolean>(this, android.R.layout.simple_spinner_item, spinnerValue));
@@ -89,7 +86,7 @@ public class ActGetAllMenu extends AppCompatActivity implements AdapterView.OnIt
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Set-Cookie",EasyPreference.with(ActGetAllMenu.this).getString("Cookie", ""));
+        headers.put("Authorization",EasyPreference.with(ActGetAllMenu.this).getString("Cookie", ""));
         Observable<CoreAllMenuResponse> call = iCore.GetAllMainMenu(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
