@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="activity.member.ActCount"></activity>
+        <activity android:name="activity.core.ActSelectCurrentSite"></activity>
+        <activity android:name="activity.core.ActGetAllMenu" />
+        <activity android:name="activity.core.ActGetAllWithAlias" />
+        <activity android:name="activity.member.ActCount" />
         <activity android:name="activity.chart.ActCount" />
         <activity android:name="activity.shop.ActCount" />
         <activity android:name="activity.shop.ActShop" />

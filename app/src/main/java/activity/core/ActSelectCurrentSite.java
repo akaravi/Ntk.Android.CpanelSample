@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,22 +28,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import ntk.base.api.core.interfase.ICore;
-import ntk.base.api.core.model.CoreUserLoginRequest;
-import ntk.base.api.core.model.CoreUserResponse;
+import ntk.base.api.core.model.CoreAllWithAliasResponse;
+import ntk.base.api.core.model.CoreGetAllRequest;
+import ntk.base.api.core.model.CoreSelectCurrentSiteRequest;
+import ntk.base.api.core.model.CoreSelectCurrentSiteResponse;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
 
-public class ActUserLogin extends AppCompatActivity {
+public class ActSelectCurrentSite extends AppCompatActivity {
 
     @BindView(R.id.lblLayout)
     TextView lblLayout;
-    @BindView(R.id.txtUsernameActUserLogin)
-    EditText Username;
-    @BindView(R.id.txtPasswordActUserLogin)
-    EditText Password;
-    @BindView(R.id.txtlangActUserLogin)
-    EditText lang;
+    @BindView(R.id.txtIdActActSelectCurrentSite)
+    EditText Id;
+    @BindView(R.id.api_test_submit_button)
+    Button apiTestSubmitButton;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
     private ConfigRestHeader configRestHeader = new ConfigRestHeader();
@@ -49,16 +52,16 @@ public class ActUserLogin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_core_user_login);
+        setContentView(R.layout.act_core_select_current_site);
         ButterKnife.bind(this);
         initialize();
     }
 
     private void initialize() {
-        lblLayout.setText("CoreUserLogin");
+        lblLayout.setText("Select Current Site");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("CoreUserLogin");
+        getSupportActionBar().setTitle("Select Current Site");
     }
 
     @OnClick(R.id.api_test_submit_button)
@@ -68,32 +71,25 @@ public class ActUserLogin extends AppCompatActivity {
     }
 
     private void getData() {
-        CoreUserLoginRequest request = new CoreUserLoginRequest();
-        if (!Username.getText().toString().matches("")) {
-            request.username = Username.getText().toString();
+        CoreSelectCurrentSiteRequest request = new CoreSelectCurrentSiteRequest();
+        if (!Id.getText().toString().matches("")) {
+            request.id = Long.valueOf(Id.getText().toString());
         }
-        if (!Password.getText().toString().matches("")) {
-            request.pwd = Password.getText().toString();
-        }
-        if (!lang.getText().toString().matches("")) {
-            request.lang = lang.getText().toString();
-        }
-        RetrofitManager manager = new RetrofitManager(ActUserLogin.this);
+        RetrofitManager manager = new RetrofitManager(ActSelectCurrentSite.this);
         ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("PackageName", EasyPreference.with(this).getString("packageName", ""));
-        Observable<CoreUserResponse> call = iCore.UserLogin(headers, request);
+        Observable<CoreSelectCurrentSiteResponse> call = iCore.SelectCurrentSite(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<CoreUserResponse>() {
+                .subscribe(new Observer<CoreSelectCurrentSiteResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(CoreUserResponse response) {
-                        JsonDialog cdd = new JsonDialog(ActUserLogin.this, response);
+                    public void onNext(CoreSelectCurrentSiteResponse response) {
+                        JsonDialog cdd = new JsonDialog(ActSelectCurrentSite.this, response);
                         cdd.setCanceledOnTouchOutside(false);
                         cdd.show();
                     }
@@ -102,7 +98,7 @@ public class ActUserLogin extends AppCompatActivity {
                     public void onError(Throwable e) {
                         progressBar.setVisibility(View.GONE);
                         Log.i("Error", e.getMessage());
-                        Toast.makeText(ActUserLogin.this, "Error : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ActSelectCurrentSite.this, "Error : " + e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override

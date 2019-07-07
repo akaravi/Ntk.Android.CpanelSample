@@ -22,6 +22,9 @@ public class ActCore extends AppCompatActivity {
     RecyclerView apiRecyclerView;
     private String[] articleList = new String[]{
             "Core User Login",
+            "Get All With Alias",
+            "Get All Menu",
+            "Select Current Site",
             "Main",
             "Core About Us",
             "Core User Register By Mobile",
@@ -93,13 +96,13 @@ public class ActCore extends AppCompatActivity {
                             startActivity(new Intent(ActCore.this, ActUserLogin.class));
                             break;
                         case 1:
-                            startActivity(new Intent(ActCore.this, ActGetResponseMain.class));
+                            startActivity(new Intent(ActCore.this, ActGetAllWithAlias.class));
                             break;
                         case 2:
-                            startActivity(new Intent(ActCore.this, ActGetAbout.class));
+                            startActivity(new Intent(ActCore.this, ActGetAllMenu.class));
                             break;
                         case 3:
-                            startActivity(new Intent(ActCore.this, ActRegisterWithMobile.class));
+                            startActivity(new Intent(ActCore.this, ActSelectCurrentSite.class));
                             break;
                         case 4:
                             startActivity(new Intent(ActCore.this, ActLocation.class));
