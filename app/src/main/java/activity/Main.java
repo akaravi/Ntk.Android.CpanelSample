@@ -227,6 +227,9 @@ public class Main extends AppCompatActivity {
                             if (RememberMeValue) {
                                 EasyPreference.with(Main.this).addString("Username", request.username);
                                 EasyPreference.with(Main.this).addString("Password", request.pwd);
+                            }else {
+                                EasyPreference.with(Main.this).remove("Username");
+                                EasyPreference.with(Main.this).remove("Password");
                             }
                             EasyPreference.with(Main.this).addString("Cookie", response.UserTicketToken);
                             layoutLogin.setVisibility(View.GONE);
