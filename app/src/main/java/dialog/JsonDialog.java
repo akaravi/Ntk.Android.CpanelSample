@@ -10,15 +10,12 @@ import android.widget.Button;
 import com.dandan.jsonhandleview.library.JsonViewLayout;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import ntk.base.api.article.model.ArticleContentResponse;
 import ntk.base.app.R;
 
 
 public class JsonDialog extends Dialog {
 
-    private Object  text;
+    private Object text;
     public Activity c;
 
     public JsonDialog(Activity a, Object message) {

@@ -1,4 +1,4 @@
-package activity.core;
+package activity.news;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,32 +29,38 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICoreSite;
-import ntk.base.api.core.model.CoreSiteGetAllWithAliasRequest;
-import ntk.base.api.core.model.CoreSiteResponse;
+import ntk.base.api.news.interfase.INewsCategory;
+import ntk.base.api.news.model.NewsCategoryResponse;
+import ntk.base.api.news.model.NewsGetAllRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
 
-public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ActNewsCategoryGetAll extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    @BindView(R.id.txtContentFullSearchActGetAllWithAlias)
-    EditText txtContent;
-    @BindView(R.id.SpinnerNeedToRunFakePaginationActGetAllWithAlias)
-    Spinner NeedToRun;
+    @BindView(R.id.row_per_page_text)
+    EditText rowPerPageText;
+    @BindView(R.id.sort_type_spinner)
+    Spinner sortTypeSpinner;
+    @BindView(R.id.skip_row_data_text)
+    EditText skipRowDataText;
+    @BindView(R.id.current_page_number_text)
+    EditText currentPageNumberText;
+    @BindView(R.id.sort_column_text)
+    EditText sortColumnText;
     @BindView(R.id.api_test_submit_button)
     Button apiTestSubmitButton;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
     private ConfigRestHeader configRestHeader = new ConfigRestHeader();
+    private List<String> sort_type = new ArrayList<String>();
     private ConfigStaticValue configStaticValue = new ConfigStaticValue(this);
-    private int NeedToRunValue;
-    private List<Boolean> spinnerValue = new ArrayList<Boolean>();
+    private int sort_Type_posistion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_core_get_all_with_alias);
+        setContentView(R.layout.act_news_category_get_all);
         ButterKnife.bind(this);
         initialize();
     }
@@ -63,41 +68,43 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
     private void initialize() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("GetAllWithAlias");
-        spinnerValue.add(0, true);
-        spinnerValue.add(1, false);
-        NeedToRun.setAdapter(new ArrayAdapter<Boolean>(this, android.R.layout.simple_spinner_item, spinnerValue));
-        NeedToRun.setOnItemSelectedListener(this);
+        getSupportActionBar().setTitle("NewsCategory/getAll/");
+        sort_type.add("Descnding_Sort");
+        sort_type.add("Ascnding_Sort");
+        sort_type.add("Random_Sort");
+        sortTypeSpinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, sort_type));
+        sortTypeSpinner.setOnItemSelectedListener(this);
     }
 
     @OnClick(R.id.api_test_submit_button)
-    public void onSubmitClick(View v) {
+    public void onClick(View v) {
         progressBar.setVisibility(View.VISIBLE);
         getData();
     }
 
     private void getData() {
-        CoreSiteGetAllWithAliasRequest request = new CoreSiteGetAllWithAliasRequest();
-        if (!txtContent.getText().toString().matches("")) {
-            request.ContentFullSearch = txtContent.getText().toString();
-        }
-        request.NeedToRunFakePagination = NeedToRunValue == 0;
-        RetrofitManager manager = new RetrofitManager(ActGetAllWithAlias.this);
-        ICoreSite iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreSite.class);
+        NewsGetAllRequest request = new NewsGetAllRequest();
+        request.RowPerPage = Integer.valueOf(rowPerPageText.getText().toString());
+        request.SkipRowData = Integer.valueOf(skipRowDataText.getText().toString());
+        request.SortType = sort_Type_posistion;
+        request.CurrentPageNumber = Integer.valueOf(currentPageNumberText.getText().toString());
+        request.SortColumn = sortColumnText.getText().toString();
+        RetrofitManager manager = new RetrofitManager(ActNewsCategoryGetAll.this);
+        INewsCategory iNews = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(INewsCategory.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Authorization", EasyPreference.with(ActGetAllWithAlias.this).getString("LoginCookie", ""));
-        Observable<CoreSiteResponse> call = iCore.GetAllWithAlias(headers, request);
+        headers.put("Authorization", EasyPreference.with(ActNewsCategoryGetAll.this).getString("SiteCookie", ""));
+        Observable<NewsCategoryResponse> call = iNews.GetAll(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<CoreSiteResponse>() {
+                .subscribe(new Observer<NewsCategoryResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(CoreSiteResponse response) {
-                        JsonDialog cdd = new JsonDialog(ActGetAllWithAlias.this, response);
+                    public void onNext(NewsCategoryResponse response) {
+                        JsonDialog cdd = new JsonDialog(ActNewsCategoryGetAll.this, response);
                         cdd.setCanceledOnTouchOutside(false);
                         cdd.show();
                     }
@@ -106,7 +113,7 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
                     public void onError(Throwable e) {
                         progressBar.setVisibility(View.GONE);
                         Log.i("Error", e.getMessage());
-                        Toast.makeText(ActGetAllWithAlias.this, "Error : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ActNewsCategoryGetAll.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -114,12 +121,23 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
                         progressBar.setVisibility(View.GONE);
                     }
                 });
+
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        sort_Type_posistion = position;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     @Override
@@ -131,13 +149,4 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        NeedToRunValue = position;
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }

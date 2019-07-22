@@ -28,9 +28,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICore;
-import ntk.base.api.core.model.CoreUserLoginRequest;
+import ntk.base.api.core.interfase.ICoreUser;
 import ntk.base.api.core.model.CoreUserResponse;
+import ntk.base.api.core.model.CoreUserloginRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 
@@ -86,7 +86,7 @@ public class ActUserLogin extends AppCompatActivity {
     }
 
     private void getData() {
-        CoreUserLoginRequest request = new CoreUserLoginRequest();
+        CoreUserloginRequest request = new CoreUserloginRequest();
         if (!Username.getText().toString().matches("")) {
             request.username = Username.getText().toString();
         }
@@ -108,7 +108,7 @@ public class ActUserLogin extends AppCompatActivity {
                 break;
         }
         RetrofitManager manager = new RetrofitManager(ActUserLogin.this);
-        ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
+        ICoreUser iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreUser.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
         Observable<CoreUserResponse> call = iCore.UserLogin(headers, request);

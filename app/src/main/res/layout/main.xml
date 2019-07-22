@@ -116,20 +116,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/extra_padding"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <TextView
                 style="@style/titleStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/url" />
+                android:layout_weight="0.1"
+                android:text="URL " />
 
             <EditText
                 android:id="@+id/txtUrl"
                 style="@style/textStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:background="@drawable/txt_frame"
                 android:gravity="center"
+                android:padding="5dp"
                 android:text="oco.ir/api/" />
         </LinearLayout>
 
@@ -137,21 +143,62 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/extra_padding"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <TextView
                 style="@style/titleStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Token :" />
+                android:layout_weight="0.1"
+                android:text="Login Token " />
 
             <TextView
                 android:id="@+id/txtToken"
                 style="@style/textStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:background="@drawable/txt_frame"
                 android:gravity="center"
-                android:padding="3dp" />
+                android:padding="5dp" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/spinnerSelectSite"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@drawable/txt_frame"
+            android:gravity="center"
+            android:padding="5dp"
+            android:tooltipText="Select Site" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/extra_padding"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                style="@style/titleStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:text="Site Token " />
+
+            <TextView
+                android:id="@+id/txtSiteToken"
+                style="@style/textStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:background="@drawable/txt_frame"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="null" />
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView

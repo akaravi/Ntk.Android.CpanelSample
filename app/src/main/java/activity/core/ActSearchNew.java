@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -25,9 +24,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICore;
-import ntk.base.api.core.model.CoreSearchNewRequest;
-import ntk.base.api.core.model.CoreSearchNewResponse;
+import ntk.base.api.core.interfase.ICoreSite;
+import ntk.base.api.core.model.CoreSiteResponse;
+import ntk.base.api.core.model.CoreSiteSearchNewRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
@@ -64,25 +63,23 @@ public class ActSearchNew extends AppCompatActivity {
     }
 
     private void getData() {
-        CoreSearchNewRequest request = new CoreSearchNewRequest();
-        if (!Key.getText().toString().matches("")) {
-            request.key = Long.valueOf(Key.getText().toString());
-        }
+        CoreSiteSearchNewRequest request = new CoreSiteSearchNewRequest();
+
         RetrofitManager manager = new RetrofitManager(ActSearchNew.this);
-        ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
+        ICoreSite iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreSite.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Authorization", EasyPreference.with(ActSearchNew.this).getString("Cookie", ""));
-        Observable<CoreSearchNewResponse> call = iCore.SearchNew(headers, request);
+        headers.put("Authorization", EasyPreference.with(ActSearchNew.this).getString("LoginCookie", ""));
+        Observable<CoreSiteResponse> call = iCore.SearchNew(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<CoreSearchNewResponse>() {
+                .subscribe(new Observer<CoreSiteResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(CoreSearchNewResponse response) {
+                    public void onNext(CoreSiteResponse response) {
                         JsonDialog cdd = new JsonDialog(ActSearchNew.this, response);
                         cdd.setCanceledOnTouchOutside(false);
                         cdd.show();

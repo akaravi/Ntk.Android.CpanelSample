@@ -36,24 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import activity.application.ActApplication;
-import activity.article.ActArticle;
-import activity.biography.ActBiography;
-import activity.blog.ActBlog;
-import activity.chart.ActChart;
 import activity.core.ActCore;
-import activity.estate.ActEstate;
-import activity.file.ActFile;
-import activity.imageGallery.ActImageGallery;
-import activity.member.ActMember;
-import activity.movieGallery.ActMovieGallery;
-import activity.musicGallery.ActMusicGallery;
 import activity.news.ActNews;
-import activity.pooling.ActPooling;
-import activity.product.ActProduct;
-import activity.service.ActService;
-import activity.shop.ActShop;
-import activity.ticketing.ActTicket;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -64,12 +48,14 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICore;
-import ntk.base.api.core.model.CoreMain;
-import ntk.base.api.core.model.CoreUserLoginRequest;
+import ntk.base.api.core.interfase.ICoreSite;
+import ntk.base.api.core.interfase.ICoreUser;
+import ntk.base.api.core.model.CoreGetAllRequest;
+import ntk.base.api.core.model.CoreSiteGetAllWithAliasRequest;
+import ntk.base.api.core.model.CoreSiteResponse;
 import ntk.base.api.core.model.CoreUserResponse;
-import ntk.base.api.core.model.MainCoreResponse;
-import ntk.base.api.estate.model.EstatePropertyViewRequest;
+import ntk.base.api.core.model.CoreUserSelectCurrentSiteRequest;
+import ntk.base.api.core.model.CoreUserloginRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.BuildConfig;
 import ntk.base.app.R;
@@ -107,37 +93,22 @@ public class Main extends AppCompatActivity {
     @BindView(R.id.checkboxRememberMe)
     CheckBox rememberMe;
 
+    @BindView(R.id.spinnerSelectSite)
+    Spinner spinnerSelectSite;
+
+    @BindView(R.id.txtSiteToken)
+    TextView txtSiteToken;
+
     private String[] apiNames = new String[]{
             "Core",
-            "Article",
-            "News",
-            "Pooling",
-            "Ticketing",
-            "Biography",
-            "Application",
-            "Estate",
-            "File",
-            "Blog",
-            "Image Gallery ",
-            "Move Gallery",
-            "Music Gallery",
-            "Product",
-            "Service",
-            "Shop",
-            "Chart",
-            "Member",
-            "Quote",
-            "Link Management",
-            "Reservation",
-            "Bank payment",
-            "Job",
-            "Advertisement",
-            "Vehicle",
-            "Object"};
+            "News"};
     private List<String> lagList = new ArrayList<String>();
+    private List<String> siteList = new ArrayList<String>();
+    private List<Long> siteIdList = new ArrayList<Long>();
     private ConfigRestHeader configRestHeader = new ConfigRestHeader();
     private ConfigStaticValue configStaticValue = new ConfigStaticValue(this);
     private int lagValue = 0;
+    private int siteValue = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +150,7 @@ public class Main extends AppCompatActivity {
     }
 
     private void getData() {
-        CoreUserLoginRequest request = new CoreUserLoginRequest();
+        CoreUserloginRequest request = new CoreUserloginRequest();
         if (!Username.getText().toString().matches("")) {
             request.username = Username.getText().toString();
         }
@@ -201,7 +172,7 @@ public class Main extends AppCompatActivity {
                 break;
         }
         RetrofitManager manager = new RetrofitManager(Main.this);
-        ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
+        ICoreUser iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreUser.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
         Observable<CoreUserResponse> call = iCore.UserLogin(headers, request);
@@ -217,8 +188,9 @@ public class Main extends AppCompatActivity {
                         if (response.IsSuccess) {
                             EasyPreference.with(Main.this).addString("Username", request.username);
                             EasyPreference.with(Main.this).addString("Password", request.pwd);
-                            EasyPreference.with(Main.this).addString("Cookie", response.UserTicketToken);
+                            EasyPreference.with(Main.this).addString("LoginCookie", response.UserTicketToken);
                             layoutLogin.setVisibility(View.GONE);
+                            getSite();
                             init();
                         } else {
                             btnLogin.setVisibility(View.VISIBLE);
@@ -237,6 +209,43 @@ public class Main extends AppCompatActivity {
                     }
                 });
     }
+
+    private void getSite() {
+        CoreSiteGetAllWithAliasRequest request = new CoreSiteGetAllWithAliasRequest();
+        RetrofitManager manager = new RetrofitManager(Main.this);
+        ICoreSite iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreSite.class);
+        Map<String, String> headers = new HashMap<>();
+        headers = configRestHeader.GetHeaders(this);
+        headers.put("Authorization", EasyPreference.with(Main.this).getString("LoginCookie", ""));
+        Observable<CoreSiteResponse> call = iCore.GetAllWithAlias(headers, request);
+        call.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<CoreSiteResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(CoreSiteResponse response) {
+                        for (int i = 0; i < response.ListItems.size(); i++) {
+                            siteList.add(response.ListItems.get(i).Title);
+                            siteIdList.add(response.ListItems.get(i).Id);
+                        }
+                        init();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(Main.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
 
     private void init() {
         EasyPreference.with(this).addString("url", "oco.ir/api/");
@@ -259,7 +268,55 @@ public class Main extends AppCompatActivity {
             }
         });
 
-        token.setText(EasyPreference.with(Main.this).getString("Cookie", ""));
+        token.setText(EasyPreference.with(Main.this).getString("LoginCookie", ""));
+
+        spinnerSelectSite.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, siteList));
+        spinnerSelectSite.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                siteValue = position;
+                getSiteToken();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void getSiteToken() {
+        CoreUserSelectCurrentSiteRequest request = new CoreUserSelectCurrentSiteRequest();
+//        request.id = siteIdList.get(siteValue);
+        RetrofitManager manager = new RetrofitManager(Main.this);
+        ICoreUser iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreUser.class);
+        Map<String, String> headers = new HashMap<>();
+        headers = configRestHeader.GetHeaders(this);
+        headers.put("Authorization", EasyPreference.with(Main.this).getString("LoginCookie", ""));
+        Observable<CoreUserResponse> call = iCore.SelectCurrentSite(headers, request);
+        call.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<CoreUserResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(CoreUserResponse response) {
+                        EasyPreference.with(Main.this).addString("SiteCookie", response.UserTicketToken);
+                        txtSiteToken.setText(response.UserTicketToken);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(Main.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.MainViewHolder> {
@@ -289,55 +346,7 @@ public class Main extends AppCompatActivity {
                             startActivity(new Intent(context, ActCore.class));
                             break;
                         case 1:
-                            startActivity(new Intent(context, ActArticle.class));
-                            break;
-                        case 2:
                             startActivity(new Intent(context, ActNews.class));
-                            break;
-                        case 3:
-                            startActivity(new Intent(context, ActPooling.class));
-                            break;
-                        case 4:
-                            startActivity(new Intent(context, ActTicket.class));
-                            break;
-                        case 5:
-                            startActivity(new Intent(context, ActBiography.class));
-                            break;
-                        case 6:
-                            startActivity(new Intent(context, ActApplication.class));
-                            break;
-                        case 7:
-                            startActivity(new Intent(context, ActEstate.class));
-                            break;
-                        case 8:
-                            startActivity(new Intent(context, ActFile.class));
-                            break;
-                        case 9:
-                            startActivity(new Intent(context, ActBlog.class));
-                            break;
-                        case 10:
-                            startActivity(new Intent(context, ActImageGallery.class));
-                            break;
-                        case 11:
-                            startActivity(new Intent(context, ActMovieGallery.class));
-                            break;
-                        case 12:
-                            startActivity(new Intent(context, ActMusicGallery.class));
-                            break;
-                        case 13:
-                            startActivity(new Intent(context, ActProduct.class));
-                            break;
-                        case 14:
-                            startActivity(new Intent(context, ActService.class));
-                            break;
-                        case 15:
-                            startActivity(new Intent(context, ActShop.class));
-                            break;
-                        case 16:
-                            startActivity(new Intent(context, ActChart.class));
-                            break;
-                        case 17:
-                            startActivity(new Intent(context, ActMember.class));
                             break;
                     }
                 }
@@ -357,120 +366,5 @@ public class Main extends AppCompatActivity {
                 button = itemView.findViewById(R.id.button_item);
             }
         }
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (EasyPreference.with(this).getString("configapp", "").isEmpty()) {
-            HandelData();
-        }
-    }
-
-    private void HandelData() {
-        if (AppUtill.isNetworkAvailable(this)) {
-            RetrofitManager manager = new RetrofitManager(this);
-            ICore iCore = manager.getCachedRetrofit(new ConfigStaticValue(this).GetApiBaseUrl()).create(ICore.class);
-            Map<String, String> headers = new ConfigRestHeader().GetHeaders(this);
-            Observable<MainCoreResponse> observable = iCore.GetResponseMain(headers);
-            observable.observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new Observer<MainCoreResponse>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onNext(MainCoreResponse mainCoreResponse) {
-                            EasyPreference.with(Main.this).addString("configapp", new Gson().toJson(mainCoreResponse.Item));
-                            CheckUpdate();
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                        }
-
-                        @Override
-                        public void onComplete() {
-
-                        }
-                    });
-        } else {
-            CheckUpdate();
-        }
-    }
-
-    private void CheckUpdate() {
-        String st = EasyPreference.with(this).getString("configapp", "");
-        CoreMain mcr = new Gson().fromJson(st, CoreMain.class);
-        if (mcr.AppVersion > BuildConfig.VERSION_CODE && BuildConfig.APPLICATION_ID.indexOf(".APPNTK") < 0) {
-            if (mcr.AppForceUpdate) {
-                UpdateFore();
-            } else {
-                Update();
-            }
-        }
-    }
-
-    private void Update() {
-        String st = EasyPreference.with(this).getString("configapp", "");
-        CoreMain mcr = new Gson().fromJson(st, CoreMain.class);
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCanceledOnTouchOutside(true);
-        Window window = dialog.getWindow();
-        window.setLayout(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.CENTER);
-        dialog.setContentView(R.layout.dialog_permission);
-        ((TextView) dialog.findViewById(R.id.lbl1PernissionDialog)).setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        ((TextView) dialog.findViewById(R.id.lbl1PernissionDialog)).setText("توجه");
-        ((TextView) dialog.findViewById(R.id.lbl2PernissionDialog)).setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        ((TextView) dialog.findViewById(R.id.lbl2PernissionDialog)).setText("نسخه جدید اپلیکیشن اومده دوست داری آبدیت بشه؟؟");
-        Button Ok = (Button) dialog.findViewById(R.id.btnOkPermissionDialog);
-        Ok.setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        Ok.setOnClickListener(view1 -> {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(mcr.AppUrl));
-            startActivity(i);
-            dialog.dismiss();
-        });
-        Button Cancel = (Button) dialog.findViewById(R.id.btnCancelPermissionDialog);
-        Cancel.setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        Cancel.setOnClickListener(view12 -> dialog.dismiss());
-        dialog.show();
-    }
-
-    private void UpdateFore() {
-        String st = EasyPreference.with(this).getString("configapp", "");
-        CoreMain mcr = new Gson().fromJson(st, CoreMain.class);
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCanceledOnTouchOutside(false);
-        Window window = dialog.getWindow();
-        window.setLayout(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-        window.setGravity(Gravity.CENTER);
-        dialog.setContentView(R.layout.dialog_update);
-        ((TextView) dialog.findViewById(R.id.lbl1PernissionDialogUpdate)).setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        ((TextView) dialog.findViewById(R.id.lbl1PernissionDialogUpdate)).setText("توجه");
-        ((TextView) dialog.findViewById(R.id.lbl2PernissionDialogUpdate)).setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        ((TextView) dialog.findViewById(R.id.lbl2PernissionDialogUpdate)).setText("نسخه جدید اپلیکیشن اومده حتما باید آبدیت بشه");
-        Button Ok = (Button) dialog.findViewById(R.id.btnOkPermissionDialogUpdate);
-        Ok.setTypeface(FontManager.GetTypeface(this, FontManager.IranSans));
-        Ok.setOnClickListener(view1 -> {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(mcr.AppUrl));
-            startActivity(i);
-            dialog.dismiss();
-        });
-        dialog.setOnKeyListener((dialog1, keyCode, event) -> {
-            switch (event.getAction()) {
-                case KeyEvent.ACTION_DOWN:
-                    finish();
-            }
-            return true;
-        });
-        dialog.show();
     }
 }

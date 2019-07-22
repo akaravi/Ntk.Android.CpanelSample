@@ -5,8 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -27,11 +25,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICore;
-import ntk.base.api.core.model.CoreAllWithAliasResponse;
-import ntk.base.api.core.model.CoreGetAllRequest;
-import ntk.base.api.core.model.CoreSelectCurrentSiteRequest;
-import ntk.base.api.core.model.CoreSelectCurrentSiteResponse;
+import ntk.base.api.core.interfase.ICoreUser;
+import ntk.base.api.core.model.CoreUserResponse;
+import ntk.base.api.core.model.CoreUserSelectCurrentSiteRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
@@ -68,25 +64,23 @@ public class ActSelectCurrentSite extends AppCompatActivity {
     }
 
     private void getData() {
-        CoreSelectCurrentSiteRequest request = new CoreSelectCurrentSiteRequest();
-        if (!Id.getText().toString().matches("")) {
-            request.id = Long.valueOf(Id.getText().toString());
-        }
+        CoreUserSelectCurrentSiteRequest request = new CoreUserSelectCurrentSiteRequest();
+
         RetrofitManager manager = new RetrofitManager(ActSelectCurrentSite.this);
-        ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
+        ICoreUser iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreUser.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Authorization",EasyPreference.with(ActSelectCurrentSite.this).getString("Cookie", ""));
-        Observable<CoreSelectCurrentSiteResponse> call = iCore.SelectCurrentSite(headers, request);
+        headers.put("Authorization",EasyPreference.with(ActSelectCurrentSite.this).getString("LoginCookie", ""));
+        Observable<CoreUserResponse> call = iCore.SelectCurrentSite(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<CoreSelectCurrentSiteResponse>() {
+                .subscribe(new Observer<CoreUserResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(CoreSelectCurrentSiteResponse response) {
+                    public void onNext(CoreUserResponse response) {
                         JsonDialog cdd = new JsonDialog(ActSelectCurrentSite.this, response);
                         cdd.setCanceledOnTouchOutside(false);
                         cdd.show();

@@ -100,9 +100,6 @@ public class ActCore extends AppCompatActivity {
                             startActivity(new Intent(ActCore.this, ActSearchNew.class));
                             break;
                         case 5:
-                            startActivity(new Intent(ActCore.this, ActGetCount.class));
-                            break;
-                        case 6:
                             startActivity(new Intent(ActCore.this, ActClearToken.class));
                             break;
                     }

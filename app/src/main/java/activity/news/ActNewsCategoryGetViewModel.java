@@ -1,4 +1,4 @@
-package activity.core;
+package activity.news;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,10 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -30,32 +27,24 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICoreSite;
-import ntk.base.api.core.model.CoreSiteGetAllWithAliasRequest;
-import ntk.base.api.core.model.CoreSiteResponse;
+import ntk.base.api.news.interfase.INewsCategory;
+import ntk.base.api.news.model.NewsCategoryResponse;
+import ntk.base.api.news.model.NewsGetAllRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
 
-public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ActNewsCategoryGetViewModel extends AppCompatActivity {
 
-    @BindView(R.id.txtContentFullSearchActGetAllWithAlias)
-    EditText txtContent;
-    @BindView(R.id.SpinnerNeedToRunFakePaginationActGetAllWithAlias)
-    Spinner NeedToRun;
-    @BindView(R.id.api_test_submit_button)
-    Button apiTestSubmitButton;
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
     private ConfigRestHeader configRestHeader = new ConfigRestHeader();
     private ConfigStaticValue configStaticValue = new ConfigStaticValue(this);
-    private int NeedToRunValue;
-    private List<Boolean> spinnerValue = new ArrayList<Boolean>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_core_get_all_with_alias);
+        setContentView(R.layout.act_news_category_get_view_model);
         ButterKnife.bind(this);
         initialize();
     }
@@ -63,41 +52,32 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
     private void initialize() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("GetAllWithAlias");
-        spinnerValue.add(0, true);
-        spinnerValue.add(1, false);
-        NeedToRun.setAdapter(new ArrayAdapter<Boolean>(this, android.R.layout.simple_spinner_item, spinnerValue));
-        NeedToRun.setOnItemSelectedListener(this);
+        getSupportActionBar().setTitle("NewsCategory/getViewModel/");
     }
 
     @OnClick(R.id.api_test_submit_button)
-    public void onSubmitClick(View v) {
+    public void onClick(View v) {
         progressBar.setVisibility(View.VISIBLE);
         getData();
     }
 
     private void getData() {
-        CoreSiteGetAllWithAliasRequest request = new CoreSiteGetAllWithAliasRequest();
-        if (!txtContent.getText().toString().matches("")) {
-            request.ContentFullSearch = txtContent.getText().toString();
-        }
-        request.NeedToRunFakePagination = NeedToRunValue == 0;
-        RetrofitManager manager = new RetrofitManager(ActGetAllWithAlias.this);
-        ICoreSite iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreSite.class);
+        RetrofitManager manager = new RetrofitManager(ActNewsCategoryGetViewModel.this);
+        INewsCategory iNews = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(INewsCategory.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Authorization", EasyPreference.with(ActGetAllWithAlias.this).getString("LoginCookie", ""));
-        Observable<CoreSiteResponse> call = iCore.GetAllWithAlias(headers, request);
+        headers.put("Authorization", EasyPreference.with(ActNewsCategoryGetViewModel.this).getString("SiteCookie", ""));
+        Observable<NewsCategoryResponse> call = iNews.GetViewModel(headers);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<CoreSiteResponse>() {
+                .subscribe(new Observer<NewsCategoryResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(CoreSiteResponse response) {
-                        JsonDialog cdd = new JsonDialog(ActGetAllWithAlias.this, response);
+                    public void onNext(NewsCategoryResponse response) {
+                        JsonDialog cdd = new JsonDialog(ActNewsCategoryGetViewModel.this, response);
                         cdd.setCanceledOnTouchOutside(false);
                         cdd.show();
                     }
@@ -106,7 +86,7 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
                     public void onError(Throwable e) {
                         progressBar.setVisibility(View.GONE);
                         Log.i("Error", e.getMessage());
-                        Toast.makeText(ActGetAllWithAlias.this, "Error : " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ActNewsCategoryGetViewModel.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -114,6 +94,7 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
                         progressBar.setVisibility(View.GONE);
                     }
                 });
+
     }
 
     @Override
@@ -131,13 +112,4 @@ public class ActGetAllWithAlias extends AppCompatActivity implements AdapterView
         return super.onKeyDown(keyCode, event);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        NeedToRunValue = position;
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }

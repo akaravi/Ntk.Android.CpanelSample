@@ -30,9 +30,9 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import ntk.base.api.core.interfase.ICore;
-import ntk.base.api.core.model.CoreAllMenuResponse;
-import ntk.base.api.core.model.CoreGetAllRequest;
+import ntk.base.api.core.interfase.ICoreCpMainMenu;
+import ntk.base.api.core.model.CoreCpMainMenuResponse;
+import ntk.base.api.core.model.CoreGetAllMenuRequest;
 import ntk.base.api.utill.RetrofitManager;
 import ntk.base.app.R;
 import utill.EasyPreference;
@@ -77,26 +77,26 @@ public class ActGetAllMenu extends AppCompatActivity implements AdapterView.OnIt
     }
 
     private void getData() {
-        CoreGetAllRequest request = new CoreGetAllRequest();
+        CoreGetAllMenuRequest request = new CoreGetAllMenuRequest();
         if (!txtContent.getText().toString().matches("")) {
             request.ContentFullSearch = txtContent.getText().toString();
         }
         request.NeedToRunFakePagination = NeedToRunValue == 0;
         RetrofitManager manager = new RetrofitManager(ActGetAllMenu.this);
-        ICore iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICore.class);
+        ICoreCpMainMenu iCore = manager.getRetrofit(configStaticValue.ApiBaseUrl).create(ICoreCpMainMenu.class);
         Map<String, String> headers = new HashMap<>();
         headers = configRestHeader.GetHeaders(this);
-        headers.put("Authorization",EasyPreference.with(ActGetAllMenu.this).getString("Cookie", ""));
-        Observable<CoreAllMenuResponse> call = iCore.GetAllMainMenu(headers, request);
+        headers.put("Authorization", EasyPreference.with(ActGetAllMenu.this).getString("LoginCookie", ""));
+        Observable<CoreCpMainMenuResponse> call = iCore.GetAllMenu(headers, request);
         call.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<CoreAllMenuResponse>() {
+                .subscribe(new Observer<CoreCpMainMenuResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                     }
 
                     @Override
-                    public void onNext(CoreAllMenuResponse response) {
+                    public void onNext(CoreCpMainMenuResponse response) {
                         JsonDialog cdd = new JsonDialog(ActGetAllMenu.this, response);
                         cdd.setCanceledOnTouchOutside(false);
                         cdd.show();
